@@ -1,4 +1,5 @@
 import { useState } from "react";
+import './TaskForm.css';
 
 interface TaskFormProps {
   onAddTask: (title: string) => Promise<void>;
@@ -6,7 +7,8 @@ interface TaskFormProps {
 
 export default function TaskForm({ onAddTask }: TaskFormProps) {
   const [title, setTitle] = useState<string>('');
-  
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
   const MAX_TASK_TITLE_LENGTH = 256;
   const PLACEHOLDERS = [
     "I need to...",
@@ -20,7 +22,8 @@ export default function TaskForm({ onAddTask }: TaskFormProps) {
     e.preventDefault();
 
     let trimmedTitle = title.trim()
-    if(trimmedTitle) {
+    if(trimmedTitle && !isSubmitting) {
+      setIsSubmitting(true);
       try {
         await onAddTask(trimmedTitle);
         setTitle('');
@@ -28,19 +31,25 @@ export default function TaskForm({ onAddTask }: TaskFormProps) {
       catch(error) {
         console.error("Failed to submit task with error: ", error);
       }
+      finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className="task-form" onSubmit={handleSubmit}>
       <input
         type="text"
         placeholder={PLACEHOLDERS[Math.floor(Math.random() * PLACEHOLDERS.length)]}
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         maxLength={MAX_TASK_TITLE_LENGTH}
+        disabled={isSubmitting}
       />
-      <button type="submit">Add Task</button>
+      <button type="submit" disabled={isSubmitting}>
+        {isSubmitting ? 'Adding...' : 'Add Task'}
+      </button>
     </form>
   )
 }

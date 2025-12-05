@@ -1,5 +1,6 @@
 import type { Task } from '../types'
 import TaskItem from '../TaskItem/TaskItem'
+import './TaskList.css'
 
 interface TaskListProps {
   tasks: Task[];
@@ -9,9 +10,10 @@ interface TaskListProps {
 
 export default function TaskList({ tasks, onDeleteTask, onToggleCompletion }: TaskListProps) {
   return (
-    <div>
+    <div className="task-list">
       {tasks.map((task) => (
-        <TaskItem 
+        <TaskItem
+          key={task.id}
           id = {task.id}
           title = {task.title}
           completed = {task.completed}
