@@ -34,7 +34,7 @@ def add_task():
       "completed": False
     }
     auto_id += 1
-    return jsonify({}), 201
+    return jsonify(tasks[auto_id - 1]), 201
   
   except Exception as e:
     return jsonify({ "error": f"Adding task failed with error: {e}"}), 500
@@ -74,12 +74,14 @@ def get_stats():
   try:
     total = len(tasks)
     completed = len([t for t in tasks if tasks[t]["completed"]])
-    pending = total - completed
+    pending = total - completed,
+    rate = round(float(completed / total) * 100) if total > 0 else 100
 
     return jsonify({
       "total": total,
       "completed": completed,
-      "pending": pending
+      "pending": pending,
+      "rate": rate
     }), 200
   
   except Exception as e:
